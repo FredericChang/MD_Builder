@@ -45,6 +45,7 @@ function App() {
               files={defaultFiles}
               activeId="1"
               onTabClick={(id) => {console.log(id)}}
+              onCloseTab={(id) => {console.log('closong',id)}}
             />
           </div>
       </div>
