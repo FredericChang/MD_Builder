@@ -78,7 +78,7 @@ const FileSearch = ({ title,  onFileSearch }) => {
         </div>
     )
 }
-FileSearch.protoTypes = {
+FileSearch.propTypes  = {
     title: PropTypes.string,
     onFileSearch: PropTypes.func.isRequired,
 }

@@ -17,7 +17,7 @@ const BottomBtn = ({ text, colorClass, icon, onBtnClick }) => (
     {text}
     </button>
 )
-BottomBtn.prototypes = {
+BottomBtn.propTypes  = {
     text: PropTypes.string,
     colorClass: PropTypes.string,
     icon: PropTypes.element.isRequired,
