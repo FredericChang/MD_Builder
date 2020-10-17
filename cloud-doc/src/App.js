@@ -1,8 +1,12 @@
 import React from 'react';
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
 import FileSearch from './components/FileSearch'
+import SimpleMDE from "react-simplemde-editor";
+
+
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
+import "easymde/dist/easymde.min.css";
 import FileList from './components/FileList'
 import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
@@ -21,7 +25,7 @@ function App() {
               // onFileClick={(id)=> {console.log(id)}}
               onFileClick={(id) => { console.log(id)}}
               onFileDelete={(id) => { console.log('delete', id)}}
-              onSaveEdit={(id, newValue) => {console.log(id); console.log(newValue)}}
+              // onSaveEdit={(id, newValue) => {console.log(id); console.log(newValue)}}
             />
             <div className="row no-gutters">
               <div className="col"> 
@@ -44,8 +48,16 @@ function App() {
             <TabList
               files={defaultFiles}
               activeId="1"
+              unsaveIds={["1", "2"]}
               onTabClick={(id) => {console.log(id)}}
               onCloseTab={(id) => {console.log('closong',id)}}
+            />
+            <SimpleMDE 
+              value={ defaultFiles[1].body}
+              onChange={(value) => {console.log(value)}}
+              options={{
+                minHeight: '515px',
+              }}
             />
           </div>
       </div>

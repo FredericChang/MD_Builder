@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
+import useKeyPress from '../hooks/useKeyPress'
 import PropTypes from 'prop-types'
 
 
@@ -9,22 +10,38 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     const [ editStatus , setEditStatus ] = useState(false)
     const [ value, setValue ] = useState('')
     let node = useRef(null)
-    const closeSearch = (e) =>{
-        e.preventDefault()
+    const enterPressed = useKeyPress(13)
+    const escPressed = useKeyPress(27)
+    // const closeSearch = (e) =>{
+    //     e.preventDefault()
+    //     setEditStatus(false)
+    //     setValue('') 
+    // }
+    const closeSearch = (editItem) => {
         setEditStatus(false)
-        setValue('') 
-    }
+        setValue('')
+      }
     useEffect(() => {
         const handleInputEvent = (event) =>{
-            const { keyCode } = event
-            if (keyCode === 13 && setEditStatus ){
-                const editItem = files.find(file => file.id === editStatus)
+            // const { keyCode } = event
+            // if (keyCode === 13 && setEditStatus ){
+            //     const editItem = files.find(file => file.id === editStatus)
+            const editItem = files.find(file => file.id === editStatus)
+            //     onSaveEdit(editItem.id, value)
+            //     setEditStatus(false)
+            //     setValue('')
+            // }
+            // else if (keyCode === 27 && setEditStatus ){
+            //     closeSearch(event)
+            // }
+            if (enterPressed && editStatus ) {
                 onSaveEdit(editItem.id, value)
                 setEditStatus(false)
                 setValue('')
-            }else if (keyCode === 27 && setEditStatus ){
-                closeSearch(event)
-            }
+              }
+              if(escPressed && editStatus) {
+                closeSearch(editItem)
+              }
         }
         document.addEventListener('keyup', handleInputEvent)
         return () =>{

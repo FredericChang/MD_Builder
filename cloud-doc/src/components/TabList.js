@@ -9,9 +9,11 @@ const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab}) =>{
     return(
         <ul className="nav nav-pills tablist-component">
             { files.map(file =>{
+                const withUnsavedMark = unsaveIds.includes(file.id)
                 const fClassName = classNames({
                     'nav-link': true,
-                    'active':file.id === activeId
+                    'active':file.id === activeId,
+                    'withUnsaved': withUnsavedMark
                 })
                 return(
                     <li className =" nav-item" key={file.id}>
@@ -30,6 +32,7 @@ const TabList = ({ files, activeId, unsaveIds, onTabClick, onCloseTab}) =>{
                                     icon={ faTimes } 
                                 />
                             </span>
+                            {withUnsavedMark && <span className="rounded-circle ml-2 unsaved-icon"></span>}
                         </a>
                     </li>
                 )
