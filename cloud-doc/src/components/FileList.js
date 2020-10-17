@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     const [ editStatus , setEditStatus ] = useState(false)
     const [ value, setValue ] = useState('')
+    let node = useRef(null)
     const closeSearch = (e) =>{
         e.preventDefault()
         setEditStatus(false)
@@ -82,6 +83,7 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
                           <input
                               className="form-control col-10"
                               value={value}
+                              ref={node}
                               onChange={(e) => {setValue(e.target.value)}}
                           />
                           <button

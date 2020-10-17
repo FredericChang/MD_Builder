@@ -2,34 +2,34 @@ import React, { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
+import useKeyPress from '../hooks/useKeyPress'
 
-const FileSearch = ({ title, onFileSearch }) => {
+const FileSearch = ({ title,  onFileSearch }) => {
     const [ inputActive, setInputActive ] = useState(false)
     const [ value, setValue ] = useState('')
+    const enterPressed = useKeyPress(13)
+    const escPressed = useKeyPress(27)
+    let node = useRef(null)
     let number = useRef(1)
     number.current++
     console.log(number.current) //number current 會變化 number則不會變化
-    let node = useRef(null)
-
-    const closeSearch = (e) =>{
-        e.preventDefault()
+    // const closeSearch = (e) =>{
+    //     e.preventDefault()
+    //     setInputActive(false)
+    //     setValue('') 
+    // }
+    const closeSearch = () =>{
         setInputActive(false)
         setValue('') 
     }
     useEffect(() => {
-        const handleInputEvent = (event) =>{
-            const { keyCode } = event
-            if (keyCode === 13 && inputActive ){
-                onFileSearch(value)
-            }else if (keyCode === 27 && inputActive ){
-                closeSearch(event)
-            }
+        if (enterPressed && inputActive) {
+          onFileSearch(value)
         }
-        document.addEventListener('keyup', handleInputEvent)
-        return () =>{
-            document.removeEventListener('keyup', handleInputEvent)
+        if(escPressed && inputActive) {
+          closeSearch()
         }
-    })
+      })
     useEffect(() => { //用途用於搜索點亮
         if (inputActive){
             node.current.focus()
@@ -37,7 +37,7 @@ const FileSearch = ({ title, onFileSearch }) => {
     }, [inputActive])
 
     return(
-        <div class="alert alert-primary d-flex justify-content-between align-items-center " role="alert">
+        <div className="alert alert-primary d-flex justify-content-between align-items-center mb-0" role="alert">
             {!inputActive &&
                 <> 
                     <span>{title}</span> 
