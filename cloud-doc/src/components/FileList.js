@@ -21,8 +21,10 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
         setEditStatus(false)
         setValue('')
         // if we're editing new file
+        console.log("onFileDelete-1")
         if ( editItem.isNew){
             onFileDelete(editItem.id)
+            console.log("onFileDelete-2")
         }
       }
     useEffect(() => {
@@ -106,6 +108,7 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
                             type="button"
                             className="icon-button col-2"
                             onClick={()=> {onFileDelete(file.id)}}
+                            
                         >
                             <FontAwesomeIcon 
                                 title= "Delete"
