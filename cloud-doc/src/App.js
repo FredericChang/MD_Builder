@@ -2,6 +2,7 @@ import React , { useEffect, useState }from 'react';
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
 import FileSearch from './components/FileSearch'
 import SimpleMDE from "react-simplemde-editor";
+import uuidv4 from 'uuid/dist/v4'
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -16,6 +17,7 @@ function App() {
   const [ activeFileID, setActiveFileID ] = useState('')
   const [ openedFileIDs, setOpenedFileIDs ] = useState([])
   const [ unsavedFileIDs, setUnsavedFileIDs ] = useState([])
+  const [ searchedFiles, setSearchedFiles ] = useState([])
   const openedFiles = openedFileIDs.map(openID => {
     return files.find(file => file.id === openID)
   })
@@ -65,22 +67,44 @@ function App() {
     const newFiles = files.map(file => {
       if (file.id === id) {
         file.title = title
+        file.isNew = false // if you didn't add this line, the status will keep staying on edit box
       }
       return file
     })
     setFiles(newFiles)
   }
 
+  const fileSearch = (keyword) => {
+    const newFiles = files.filter(file => file.title.includes(keyword))
+    setSearchedFiles(newFiles)
+  }
+  
+  const createNewFile = () => {
+    const newID = uuidv4()
+    const newFiles = [
+      ...files,
+      {
+        id: newID,
+        title: '',
+        body: '##please enter markdown',
+        createAt: new Date().getTime(),
+        isNew: true,
+      }
+    ]
+    setFiles(newFiles)
+  }
   const activeFile = files.find(file => file.id ===activeFileID)
+  const fileListArr = (searchedFiles.length > 0 ) ? searchedFiles : files
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
           <div className= "col-3 bg-light left-panel">
             <FileSearch 
               title='Cloud Search'
+              onFileSearch={fileSearch}
             />
             <FileList
-              files={files}
+              files={fileListArr}
               // onFileClick={(id)=> {console.log(id)}}
               onFileClick={fileClick}
               onFileDelete={deleteFile}
@@ -92,6 +116,7 @@ function App() {
                   text="New" 
                   colorClass="btn-primary" 
                   icon={faPlus}
+                  onBtnClick = {createNewFile}
                 />
               </div>
               <div className="col"> 

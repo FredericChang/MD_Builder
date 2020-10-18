@@ -18,9 +18,14 @@ const FileSearch = ({ title,  onFileSearch }) => {
     //     setInputActive(false)
     //     setValue('') 
     // }
+    const startSearch = () => {
+        setInputActive(true)
+      }
+      
     const closeSearch = () =>{
         setInputActive(false)
         setValue('') 
+        onFileSearch('')
     }
     useEffect(() => {
         if (enterPressed && inputActive) {
