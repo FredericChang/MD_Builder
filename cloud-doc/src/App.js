@@ -1,8 +1,7 @@
-import React from 'react';
+import React , { useEffect, useState }from 'react';
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
 import FileSearch from './components/FileSearch'
 import SimpleMDE from "react-simplemde-editor";
-
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -13,21 +12,45 @@ import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 
 function App() {
+  const [ files, setFiles ] = useState(defaultFiles)
+  const [ activeFileID, setActiveFileID ] = useState('')
+  const [ openedFileIDs, setOpenedFileIDs ] = useState([])
+  const [ unsavedFileIDs, setUnsavedFileIDs ] = useState([])
+  const openedFiles = openedFileIDs.map(openID => {
+    return files.find(file => file.id === openID)
+  })
+
+  const fileClick = (fileID) =>{
+    setActiveFileID(fileID)
+    if (!openedFileIDs.includes(fileID)){
+      setOpenedFileIDs([ ...openedFileIDs, fileID])
+    }
+  }
+
+  const tabClick = (fileID) => {
+    setActiveFileID(fileID)
+  }
+
+  const tabClose = (id) => {
+    const tabWithout = openedFileIDs.filter(fileID => fileID !== id)
+    setOpenedFileIDs()
+  }
+  const activeFile = files.find(file => file.id ===activeFileID)
   return (
     <div className="App container-fluid px-0">
-      <div className="row">
-          <div className= "col-3 left-panel">
+      <div className="row no-gutters">
+          <div className= "col-3 bg-light left-panel">
             <FileSearch 
               title='Cloud Search'
             />
             <FileList
-              files={defaultFiles}
+              files={files}
               // onFileClick={(id)=> {console.log(id)}}
-              onFileClick={(id) => { console.log(id)}}
+              onFileClick={fileClick}
               onFileDelete={(id) => { console.log('delete', id)}}
               // onSaveEdit={(id, newValue) => {console.log(id); console.log(newValue)}}
             />
-            <div className="row no-gutters">
+            <div className="row no-gutters button-group">
               <div className="col"> 
                 <BottomBtn 
                   text="New" 
@@ -45,20 +68,30 @@ function App() {
             </div>
           </div>
           <div className= "col-9 right-panel">
-            <TabList
-              files={defaultFiles}
-              activeId="1"
-              unsaveIds={["1", "2"]}
-              onTabClick={(id) => {console.log(id)}}
-              onCloseTab={(id) => {console.log('closong',id)}}
-            />
-            <SimpleMDE 
-              value={ defaultFiles[1].body}
-              onChange={(value) => {console.log(value)}}
-              options={{
-                minHeight: '515px',
-              }}
-            />
+            { !activeFile &&
+              <div className="start-page">
+                please choose one or make a new Markdown
+              </div>
+            }
+            { activeFile &&
+              <>
+                <TabList
+                  files={openedFiles}
+                  activeId={activeFileID}
+                  unsaveIds={unsavedFileIDs}
+                  onTabClick={tabClick}
+                  onCloseTab={tabClose}
+                />
+                <SimpleMDE 
+                  key={ activeFile && activeFile.id }
+                  value={ activeFile && activeFile.body}
+                  onChange={(value) => {console.log(value)}}
+                  options={{
+                    minHeight: '515px',
+                  }}
+                />
+              </>
+            }
           </div>
       </div>
     </div>
