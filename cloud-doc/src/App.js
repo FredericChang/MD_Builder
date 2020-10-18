@@ -32,9 +32,15 @@ function App() {
   }
 
   const tabClose = (id) => {
-    const tabWithout = openedFileIDs.filter(fileID => fileID !== id)
-    setOpenedFileIDs()
+    const tabsWithout = openedFileIDs.filter(fileID => fileID !== id)
+    setOpenedFileIDs(tabsWithout)
+    if (tabsWithout.length > 0){
+      setActiveFileID(tabsWithout[0])
+    }else {
+      setActiveFileID('')
+    }
   }
+
   const activeFile = files.find(file => file.id ===activeFileID)
   return (
     <div className="App container-fluid px-0">
