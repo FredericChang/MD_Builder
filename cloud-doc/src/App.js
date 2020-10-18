@@ -41,6 +41,36 @@ function App() {
     }
   }
 
+  const fileChange = (id, value) => {
+    const newFiles = files.map(file => {
+      if (file.id === id){
+        file.body = value
+      }
+      return file
+    })
+    setFiles(newFiles)
+    // updated newSavedID
+    if (!unsavedFileIDs.includes(id)){
+      setUnsavedFileIDs([ ... unsavedFileIDs, id])
+    }
+  }
+
+  const deleteFile = (id) => {
+    const newFiles = files.filter(file => file.id !== id)
+    setFiles(newFiles)
+    tabClose(id)
+  }
+
+  const updatedFileName = (id, title) => {
+    const newFiles = files.map(file => {
+      if (file.id === id) {
+        file.title = title
+      }
+      return file
+    })
+    setFiles(newFiles)
+  }
+
   const activeFile = files.find(file => file.id ===activeFileID)
   return (
     <div className="App container-fluid px-0">
@@ -53,8 +83,8 @@ function App() {
               files={files}
               // onFileClick={(id)=> {console.log(id)}}
               onFileClick={fileClick}
-              onFileDelete={(id) => { console.log('delete', id)}}
-              // onSaveEdit={(id, newValue) => {console.log(id); console.log(newValue)}}
+              onFileDelete={deleteFile}
+              onSaveEdit={updatedFileName}
             />
             <div className="row no-gutters button-group">
               <div className="col"> 
@@ -91,7 +121,7 @@ function App() {
                 <SimpleMDE 
                   key={ activeFile && activeFile.id }
                   value={ activeFile && activeFile.body}
-                  onChange={(value) => {console.log(value)}}
+                  onChange={(value) => {fileChange(activeFile.id, value)}}
                   options={{
                     minHeight: '515px',
                   }}

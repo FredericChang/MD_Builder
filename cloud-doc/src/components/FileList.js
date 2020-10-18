@@ -22,31 +22,31 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
         setValue('')
       }
     useEffect(() => {
-        const handleInputEvent = (event) =>{
+        // const handleInputEvent = (event) =>{
             // const { keyCode } = event
             // if (keyCode === 13 && setEditStatus ){
             //     const editItem = files.find(file => file.id === editStatus)
             const editItem = files.find(file => file.id === editStatus)
-            //     onSaveEdit(editItem.id, value)
-            //     setEditStatus(false)
-            //     setValue('')
-            // }
-            // else if (keyCode === 27 && setEditStatus ){
-            //     closeSearch(event)
-            // }
+                //     onSaveEdit(editItem.id, value)
+                //     setEditStatus(false)
+                //     setValue('')
+                // }
+                // else if (keyCode === 27 && setEditStatus ){
+                //     closeSearch(event)
+                // }
             if (enterPressed && editStatus ) {
                 onSaveEdit(editItem.id, value)
                 setEditStatus(false)
                 setValue('')
-              }
-              if(escPressed && editStatus) {
+            }
+            if(escPressed && editStatus) {
                 closeSearch(editItem)
-              }
-        }
-        document.addEventListener('keyup', handleInputEvent)
-        return () =>{
-            document.removeEventListener('keyup', handleInputEvent)
-        }
+            }
+        // }
+        // document.addEventListener('keyup', handleInputEvent)
+        // return () =>{
+        //     document.removeEventListener('keyup', handleInputEvent)
+        // }
     })
     return( 
         <ul className= "list-group list-group-flush file-list">
