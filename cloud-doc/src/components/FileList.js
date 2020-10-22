@@ -41,7 +41,7 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
                 //     closeSearch(event)
                 // }
             if (enterPressed && editStatus && value.trim() !== '') {
-                onSaveEdit(editItem.id, value)
+                onSaveEdit(editItem.id, value, editItem.isNew)
                 setEditStatus(false)
                 setValue('')
             }

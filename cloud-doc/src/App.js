@@ -5,7 +5,7 @@ import SimpleMDE from "react-simplemde-editor";
 import uuidv4 from 'uuid/dist/v4'
 
 import { flattenArr, objToArr} from './utils/helper'
-
+import fileHelper from './utils/fileHelper'
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -14,6 +14,10 @@ import FileList from './components/FileList'
 import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
+
+const { remote } = window.require('electron')
+const {join} = window.require('path')
+
 
 function App() {
   const [ files, setFiles ] = useState(flattenArr(defaultFiles))
@@ -25,6 +29,7 @@ function App() {
   const filesArr = objToArr(files)
   console.log(filesArr)
 
+  const savedLocation = 'D:\\WebstormProjects\\MD_Builder\\cloud-doc\\'
   const activeFile = files[activeFileID]
   const openedFiles = openedFileIDs.map(openID => {
     return files[openID]
@@ -81,7 +86,7 @@ function App() {
     tabClose(id)
   }
 
-  const updatedFileName = (id, title) => {
+  const updatedFileName = (id, title, isNew) => {
     // const newFiles = files.map(file => {
     //   if (file.id === id) {
     //     file.title = title
@@ -90,7 +95,20 @@ function App() {
     //   return file
     // })
     const modifiedFile = { ... files[id], title, isNew: false}
-    setFiles({ ...files, [id]: modifiedFile})
+    // setFiles({ ...files, [id]: modifiedFile})
+    if (isNew) {
+      fileHelper.writeFile(join(savedLocation, `${title}.md`), files[id].body).then(() => {
+        setFiles({ ...files, [id]: modifiedFile})
+      })
+
+
+    } else {
+      fileHelper.renameFile(join(savedLocation, `${files[id].title}.md`),
+      join(savedLocation, `${title}.md`)).then(() => {
+        setFiles({ ...files, [id]: modifiedFile})    
+         })
+    }
+    
   }
 
   const fileSearch = (keyword) => {
