@@ -1,7 +1,7 @@
-const fs = require('fs').promises
-const path = require('path')
-// import * as fs from 'fs'
-// import * as path from 'path'
+const fs = window.require('fs').promises
+const path = window.require('path')
+
+
 const fileHelper = {
     readFile: ( path ) => {
         return fs.readFile(path, {encoding: 'utf-8'})
@@ -37,4 +37,4 @@ const fileHelper = {
 //     console.log(`${renamePath} delete OK`)
 // })
 
-// export default fileHelper
+export default fileHelper

@@ -1,5 +1,7 @@
-import React , { useEffect, useState }from 'react';
-import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
+import React , { useEffect, useState }from 'react'
+
+
+import { faPlus, faFileImport, faSave } from '@fortawesome/free-solid-svg-icons'
 import FileSearch from './components/FileSearch'
 import SimpleMDE from "react-simplemde-editor";
 import uuidv4 from 'uuid/dist/v4'
@@ -15,8 +17,9 @@ import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 
-const { remote } = window.require('electron')
-const {join} = window.require('path')
+
+const { app } = window.require('electron').remote
+const { join } = window.require('path')
 
 
 function App() {
@@ -28,8 +31,9 @@ function App() {
   const [ searchedFiles, setSearchedFiles ] = useState([])
   const filesArr = objToArr(files)
   console.log(filesArr)
+  const savedLocation = app.getPath('documents')
 
-  const savedLocation = 'D:\\WebstormProjects\\MD_Builder\\cloud-doc\\'
+  // const savedLocation = 'D:\\WebstormProjects\\MD_Builder\\cloud-doc'
   const activeFile = files[activeFileID]
   const openedFiles = openedFileIDs.map(openID => {
     return files[openID]
@@ -140,7 +144,13 @@ function App() {
   // const activeFile = files.find(file => file.id ===activeFileID)
 
   // const fileListArr = (searchedFiles.length > 0 ) ? searchedFiles : files
-
+  const saveCurrentFile = () => {
+    fileHelper.writeFile(join(savedLocation, `${activeFile.title}.md`),
+      activeFile.body
+      ).then(() => {
+        setUnsavedFileIDs(unsavedFileIDs.filter(id => id !== activeFile.id))
+      })
+  }
   
   return (
     <div className="App container-fluid px-0">
@@ -197,6 +207,12 @@ function App() {
                   options={{
                     minHeight: '515px',
                   }}
+                />
+                <BottomBtn 
+                  text="Export" 
+                  colorClass="btn-primary" 
+                  icon={faSave}
+                  onBtnClick = {saveCurrentFile}
                 />
               </>
             }

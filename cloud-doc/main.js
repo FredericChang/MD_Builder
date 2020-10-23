@@ -8,6 +8,7 @@ app.on('ready', () => {
         height: 680,
         webPreferences: {
             nodeIntegration: true,
+            enableRemoteModule: true,
         }
     })
     const urlLocation = isDev ? 'http://localhost:3000' : 'dummyurl'
