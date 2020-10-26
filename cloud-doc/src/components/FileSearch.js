@@ -20,7 +20,7 @@ const FileSearch = ({ title,  onFileSearch }) => {
     // }
     const startSearch = () => {
         setInputActive(true)
-      }
+    }
       
     const closeSearch = () =>{
         setInputActive(false)

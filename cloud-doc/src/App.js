@@ -20,10 +20,32 @@ import TabList from './components/TabList'
 
 const { app } = window.require('electron').remote
 const { join } = window.require('path')
+const Store = window.require('electron-store')
+const fileStore = new Store({'name': 'Files Data'})
 
+
+// store.set('name', 'Frederic')
+// console.log(store.get('name'))
+// store.delete('name')
+// console.log(store.get('name'))
+
+const saveFilesToStore = (files) => {
+  //we don't have to store everything item into file system
+  const filesStoreObj = objToArr(files).reduce((result, file) => {
+    const {id, path, title, createdAt } = file
+    result[id] = {
+      id,
+      path,
+      title,
+      createdAt,
+    }
+    return result
+  }, {})
+  fileStore.set('files', filesStoreObj)
+}
 
 function App() {
-  const [ files, setFiles ] = useState(flattenArr(defaultFiles))
+  const [ files, setFiles ] = useState(fileStore.get('files') || {})
   console.log(files)
   const [ activeFileID, setActiveFileID ] = useState('')
   const [ openedFileIDs, setOpenedFileIDs ] = useState([])
@@ -45,6 +67,13 @@ function App() {
 
   const fileClick = (fileID) =>{
     setActiveFileID(fileID)
+    const currentFile = files[fileID]
+    if (currentFile.isLoaded) {
+      fileHelper.readFile(currentFile.path).then(value => {
+        const newFile = { ...files[fileID], body: value , isLoaded : true}
+        setFiles({...files, [fileID]: newFile })
+      })
+    }
     if (!openedFileIDs.includes(fileID)){
       setOpenedFileIDs([ ...openedFileIDs, fileID])
     }
@@ -83,11 +112,19 @@ function App() {
 
   const deleteFile = (id) => {
     // const newFiles = files.filter(file => file.id !== id)
-    console.log('object', id)
-    delete files[id]
-    setFiles(files)
-    // setFiles(newFiles)
-    tabClose(id)
+    // console.log('object', id)
+    if (files[id].isNew){
+      const { [id]:value, ...afterDelete } = files
+      setFiles(afterDelete)
+      // setFiles({...files })//rerender
+    } else {
+      fileHelper.deleteFile(files[id].path).then(() => {
+        const { [id]:value, ...afterDelete } = files
+        setFiles(afterDelete)
+        saveFilesToStore(afterDelete)
+        tabClose(id)
+      })
+    }
   }
 
   const updatedFileName = (id, title, isNew) => {
@@ -98,19 +135,21 @@ function App() {
     //   }
     //   return file
     // })
-    const modifiedFile = { ... files[id], title, isNew: false}
+    const newPath = join(savedLocation, `${title}.md`)
+    const modifiedFile = { ... files[id], title, isNew: false, path: newPath}
+    const newFiles = { ...files, [id]: modifiedFile }
     // setFiles({ ...files, [id]: modifiedFile})
     if (isNew) {
-      fileHelper.writeFile(join(savedLocation, `${title}.md`), files[id].body).then(() => {
-        setFiles({ ...files, [id]: modifiedFile})
+      fileHelper.writeFile(newPath, files[id].body).then(() => {
+        setFiles(newFiles)
+        saveFilesToStore(newFiles)
       })
-
-
     } else {
-      fileHelper.renameFile(join(savedLocation, `${files[id].title}.md`),
-      join(savedLocation, `${title}.md`)).then(() => {
-        setFiles({ ...files, [id]: modifiedFile})    
-         })
+      const oldPath = join(savedLocation, `${files[id].title}.md`)
+      fileHelper.renameFile(oldPath, newPath).then(() => {
+        setFiles(newFiles)
+        saveFilesToStore(newFiles)
+      })
     }
     
   }
