@@ -8,6 +8,8 @@ import PropTypes from 'prop-types'
 
 const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     const [ editStatus , setEditStatus ] = useState(false)
+    const [ DStatus , setDStatus ] = useState(true)
+
     const [ value, setValue ] = useState('')
     let node = useRef(null)
     const enterPressed = useKeyPress(13)
@@ -17,6 +19,8 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     //     setEditStatus(false)
     //     setValue('') 
     // }
+    const arrayL = files.length;
+
     const closeSearch = (editItem) => {
         setEditStatus(false)
         setValue('')
@@ -32,19 +36,45 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
             // const { keyCode } = event
             // if (keyCode === 13 && setEditStatus ){
             //     const editItem = files.find(file => file.id === editStatus)
+            // console.log(value,"value");
+            // console.log(arrayL,"ArrayL");
+            // console.log(files);
             const editItem = files.find(file => file.id === editStatus)
-                //     onSaveEdit(editItem.id, value)
+            // console.log(editItem, "edit");
+            const zzz = files.find(file => file.title === value)
+            if (zzz) { 
+                console.log("OK")
+                setDStatus(false)
+            }else {
+                console.log("GG")
+                setDStatus(true)
+            }
+            //     onSaveEdit(editItem.id, value)
                 //     setEditStatus(false)
                 //     setValue('')
                 // }
                 // else if (keyCode === 27 && setEditStatus ){
                 //     closeSearch(event)
                 // }
+            const fileSearch = (value) => {
+                const newFiles = files.find(file => file.title===value)
+                }
+            // console.log(fileSearch);
             if (enterPressed && editStatus && value.trim() !== '') {
-                onSaveEdit(editItem.id, value, editItem.isNew)
-                setEditStatus(false)
-                setValue('')
-            }
+                if (DStatus === true){
+                    onSaveEdit(editItem.id, value, editItem.isNew)
+                    setEditStatus(false)
+                    setValue('')
+                    setDStatus(false)
+                }
+                else {
+                    console.log("sameName");
+                    closeSearch(editItem)
+                }
+                // onSaveEdit(editItem.id, value, editItem.isNew)
+                // setEditStatus(false)
+                // setValue('')
+            } 
             
             if (escPressed && editStatus) {
                 closeSearch(editItem)
@@ -57,10 +87,13 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     })
     useEffect(() => {
         const newFile = files.find(file => file.isNew)
-        console.log(newFile)
+        console.log(newFile,"newFile")
+
         if (newFile){
             setEditStatus(newFile.id)
             setValue(newFile.title)
+            console.log(newFile.id,"newFile.id")
+            console.log(newFile.title,"newFile.title")
         }
     }, [files])
 
