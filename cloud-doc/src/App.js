@@ -20,7 +20,7 @@ import TabList from './components/TabList'
 
 const { app } = window.require('electron').remote
 const { remote } = window.require('electron')
-const { join } = window.require('path')
+const { join, basename, extname } = window.require('path')
 const Store = window.require('electron-store')
 const fileStore = new Store({'name': 'Files Data'})
 
@@ -209,7 +209,8 @@ function App() {
 
   // const fileListArr = (searchedFiles.length > 0 ) ? searchedFiles : files
   const saveCurrentFile = () => {
-    fileHelper.writeFile(join(savedLocation, `${activeFile.title}.md`),
+    // fileHelper.writeFile(join(savedLocation, `${activeFile.title}.md`),
+    fileHelper.writeFile(activeFile.path,
       activeFile.body
       ).then(() => {
         setUnsavedFileIDs(unsavedFileIDs.filter(id => id !== activeFile.id))
@@ -224,8 +225,39 @@ function App() {
         {name: 'Markdown files', extensions: ['md']}
       ]
     }).then(result => {
-      console.log(result.canceled)
-      console.log(result.filePaths)
+      // console.log(result.canceled)
+      // console.log(result.filePaths)
+      const paths = result.filePaths
+      if (Array.isArray(paths)) {
+        //fileter out the path we already have in our database
+        const filteredPaths = paths.filter(path => {
+          const alredyAdded = Object.values(files).find( file => {
+            return file.path === path
+          })
+          return !alredyAdded
+        })
+        
+        const importFilesArr = filteredPaths.map(path => {
+          return {
+            id : uuidv4(),
+            title : basename(path, extname(path)),
+            path,
+          }
+        })
+        console.log(importFilesArr);
+        // get the new files object in flattenArr
+        const newFiles = { ...files, ...flattenArr(importFilesArr)}
+        // console.log(newFiles);
+        setFiles(newFiles)
+        saveFilesToStore(newFiles)
+        if (importFilesArr.length > 0) {
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: `import Ok${importFilesArr.length}`,
+            message :  `import Ok${importFilesArr.length}`,
+          })
+        }
+      }
     })
     // }, (paths) => { //return functions
     //   console.log(paths);
