@@ -136,30 +136,6 @@ function App() {
     //   if (file.id === id) {
     //     file.title = title
     //     file.isNew = false // if you didn't add this line, the status will keep staying on edit box
-    // const duplicate = false
-    // const nameSearch = (title) => {
-    //   const newFiles = filesArr.map(file => {
-    //     if (file.title === title){
-    //         console.log(file.title, title, "match")
-    //         this.duplicate = true
-    //     } else {
-    //         this.duplicate = false
-    //         console.log(file.title, title, "not match")
-    //     }
-    //   })
-    //   console.log(this.duplicate,"nameR");
-    // }
-    // // const qweqwe = nameSearch2(title)
-    // console.log(duplicate);
-    // if (duplicate === true) {
-    //   console.log("true" + "nameSearch2" + duplicate)
-    // } else {
-    //   console.log("false" + "nameSearch2" + duplicate)
-    // }
-
-    // console.log("duplicate", qweqwe);
-
-
 
     const newPath = join(savedLocation, `${title}.md`)
     const modifiedFile = { ... files[id], title, isNew: false, path: newPath}
