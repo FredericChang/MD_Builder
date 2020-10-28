@@ -20,7 +20,7 @@ import TabList from './components/TabList'
 
 const { app } = window.require('electron').remote
 const { remote } = window.require('electron')
-const { join, basename, extname } = window.require('path')
+const { join, basename, extname, dirname } = window.require('path')
 const Store = window.require('electron-store')
 const fileStore = new Store({'name': 'Files Data'})
 
@@ -138,7 +138,8 @@ function App() {
     //     file.title = title
     //     file.isNew = false // if you didn't add this line, the status will keep staying on edit box
 
-    const newPath = join(savedLocation, `${title}.md`)
+    const newPath = isNew ? join(savedLocation, `${title}.md`)
+    : join(dirname(files[id].path),  `${title}.md` )
     const modifiedFile = { ... files[id], title, isNew: false, path: newPath}
     const newFiles = { ...files, [id]: modifiedFile }
     // setFiles({ ...files, [id]: modifiedFile})
@@ -148,7 +149,7 @@ function App() {
         saveFilesToStore(newFiles)
       })
     } else {
-      const oldPath = join(savedLocation, `${files[id].title}.md`)
+      const oldPath = files[id].path
       fileHelper.renameFile(oldPath, newPath).then(() => {
         setFiles(newFiles)
         saveFilesToStore(newFiles)
