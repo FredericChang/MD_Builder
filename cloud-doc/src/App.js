@@ -13,12 +13,13 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "easymde/dist/easymde.min.css";
 import FileList from './components/FileList'
-import defaultFiles from './utils/defaultFiles'
+// import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 
 
 const { app } = window.require('electron').remote
+const { remote } = window.require('electron')
 const { join } = window.require('path')
 const Store = window.require('electron-store')
 const fileStore = new Store({'name': 'Files Data'})
@@ -215,6 +216,22 @@ function App() {
       })
   }
   
+  const importFiles =() => {
+    remote.dialog.showOpenDialog({
+      title: 'choose MD File',
+      properties: ['openFile', 'multiSelections'],
+      filters: [
+        {name: 'Markdown files', extensions: ['md']}
+      ]
+    }).then(result => {
+      console.log(result.canceled)
+      console.log(result.filePaths)
+    })
+    // }, (paths) => { //return functions
+    //   console.log(paths);
+    // })
+
+  }
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
@@ -244,6 +261,7 @@ function App() {
                   text="Import" 
                   colorClass="btn-success" 
                   icon={faFileImport}
+                  onBtnClick={importFiles}
                 />
               </div>
             </div>
