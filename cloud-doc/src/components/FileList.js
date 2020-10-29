@@ -5,6 +5,8 @@ import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import useKeyPress from '../hooks/useKeyPress'
 import PropTypes from 'prop-types'
 
+import useContextMenu from '../hooks/useContextMenu'
+
 const { remote } = window.require('electron')
 const { Menu, MenuItem } = remote
 const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
@@ -20,34 +22,37 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     //     setEditStatus(false)
     //     setValue('') 
     // }
-    useEffect(() => {
-        const menu = new Menu()
-        menu.append(new MenuItem({
+    useContextMenu([
+        {
             label: 'Open',
             click: () => {
                 console.log('clicking')
             }
-        }))
-        menu.append(new MenuItem({
+        },
+        {
             label: 'rename',
             click: () => {
                 console.log('renaming')
             }
-        }))
-        menu.append(new MenuItem({
+        },
+        {
             label: 'delete',
             click: () => {
                 console.log('deleting')
             }
-        }))
-        const handleContextMenu = (e) => {
-            menu.popup({window: remote.getCurrentWindow() })
-        }
-        window.addEventListener('contextmenu',handleContextMenu)
-        return () => {
-            window.removeEventListener('contextmenu',handleContextMenu)
-        }
-    })
+        },
+    ])
+    // useEffect(() => {
+    //     const menu = new Menu()
+    //     menu.append(new MenuItem())
+    //     const handleContextMenu = (e) => {
+    //         menu.popup({window: remote.getCurrentWindow() })
+    //     }
+    //     window.addEventListener('contextmenu',handleContextMenu)
+    //     return () => {
+    //         window.removeEventListener('contextmenu',handleContextMenu)
+    //     }
+    // })
 
     const arrayL = files.length;
     const closeSearch = (editItem) => {
