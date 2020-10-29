@@ -22,11 +22,11 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
     //     setEditStatus(false)
     //     setValue('') 
     // }
-    useContextMenu([
+    const clickedItem = useContextMenu([
         {
             label: 'Open',
             click: () => {
-                console.log('clicking')
+                console.log('clicking',clickedItem.current)
             }
         },
         {
