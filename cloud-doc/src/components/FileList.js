@@ -7,6 +7,8 @@ import PropTypes from 'prop-types'
 
 import useContextMenu from '../hooks/useContextMenu'
 
+import {getParentNode} from '../utils/helper'
+
 const { remote } = window.require('electron')
 const { Menu, MenuItem } = remote
 const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
@@ -26,7 +28,9 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
         {
             label: 'Open',
             click: () => {
-                console.log('clicking',clickedItem.current)
+                const parentElement = getParentNode(clickedItem.current, 'file-item')
+                console.log(parentElement)
+                // console.log('clicking',clickedItem.current)
             }
         },
         {
@@ -41,7 +45,7 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
                 console.log('deleting')
             }
         },
-    ])
+    ], '.file-list') //file-list === targetSelector
     // useEffect(() => {
     //     const menu = new Menu()
     //     menu.append(new MenuItem())
@@ -144,6 +148,8 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
                 <li
                     className="list-group-item bg-light d-flex row align-items-center file-item mx-0"
                     key={file.id}
+                    data-id = {file.id}
+                    data-title = {file.title}
                 >
                     { (file.id !== editStatus && !file.isNew) &&
                     <>
