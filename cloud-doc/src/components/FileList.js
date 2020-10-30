@@ -29,23 +29,37 @@ const FileList = ( {files, onFileClick, onSaveEdit, onFileDelete }) =>{
             label: 'Open',
             click: () => {
                 const parentElement = getParentNode(clickedItem.current, 'file-item')
-                console.log(parentElement)
+                if (parentElement){
+                    onFileClick(parentElement.dataset.id)
+                    console.log(parentElement.dataset.id,'Open')
+                }
                 // console.log('clicking',clickedItem.current)
             }
         },
         {
             label: 'rename',
             click: () => {
-                console.log('renaming')
+                const parentElement = getParentNode(clickedItem.current, 'file-item')
+                if (parentElement){
+                    console.log(parentElement.dataset.id,'rename')
+                    setEditStatus(parentElement.dataset.id); 
+                    setValue(parentElement.dataset.title)
+                }
             }
         },
         {
             label: 'delete',
             click: () => {
-                console.log('deleting')
+                const parentElement = getParentNode(clickedItem.current, 'file-item')
+                if (parentElement){
+                    onFileDelete(parentElement.dataset.id)
+                    console.log(parentElement.dataset.id,'delete')
+                }
             }
         },
-    ], '.file-list') //file-list === targetSelector
+    ], '.file-list',[files]) 
+    // 假如files有改變的話就重新RENDER
+    //file-list === targetSelector
     // useEffect(() => {
     //     const menu = new Menu()
     //     menu.append(new MenuItem())
