@@ -1,6 +1,4 @@
 import React , { useEffect, useState }from 'react'
-
-
 import { faPlus, faFileImport, faSave } from '@fortawesome/free-solid-svg-icons'
 import FileSearch from './components/FileSearch'
 import SimpleMDE from "react-simplemde-editor";
@@ -16,10 +14,10 @@ import FileList from './components/FileList'
 // import defaultFiles from './utils/defaultFiles'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
-
+import useIpcRenderer from './hooks/useIpcRenderer'
 
 const { app } = window.require('electron').remote
-const { remote } = window.require('electron')
+const { remote, ipcRenderer } = window.require('electron')
 const { join, basename, extname, dirname } = window.require('path')
 const Store = window.require('electron-store')
 const fileStore = new Store({'name': 'Files Data'})
@@ -52,7 +50,6 @@ function App() {
   const [ openedFileIDs, setOpenedFileIDs ] = useState([])
   const [ unsavedFileIDs, setUnsavedFileIDs ] = useState([])
   const [ searchedFiles, setSearchedFiles ] = useState([])
-  const [ duplicateIDs, setDuplicateID] = useState(false)
 
 
   const filesArr = objToArr(files)
@@ -106,13 +103,16 @@ function App() {
     //   }
     //   return file
     // })
-    const newFile = { ... files[id], body: value}
-    setFiles({ ...files, [id]: newFile })
-    // setFiles({})
-    // setFiles(newFiles)
-    // updated newSavedID
-    if (!unsavedFileIDs.includes(id)){
-      setUnsavedFileIDs([ ... unsavedFileIDs, id])
+    if (value !== files[id].body){
+      //added this if for fixxing the bug for hot-key, hotkey didn't change the red point.
+      const newFile = { ...files[id], body: value}
+      setFiles({ ...files, [id]: newFile })
+      // setFiles({})
+      // setFiles(newFiles)
+      // updated newSavedID
+      if (!unsavedFileIDs.includes(id)){
+        setUnsavedFileIDs([ ...unsavedFileIDs, id])
+      }
     }
   }
 
@@ -141,7 +141,7 @@ function App() {
 
     const newPath = isNew ? join(savedLocation, `${title}.md`)
     : join(dirname(files[id].path),  `${title}.md` )
-    const modifiedFile = { ... files[id], title, isNew: false, path: newPath}
+    const modifiedFile = { ...files[id], title, isNew: false, path: newPath}
     const newFiles = { ...files, [id]: modifiedFile }
     // setFiles({ ...files, [id]: modifiedFile})
     if (isNew) {
@@ -163,28 +163,6 @@ function App() {
     const newFiles = filesArr.filter(file => file.title.includes(keyword))
     setSearchedFiles(newFiles)
   }
-
-  const nameSearch = (title) => {
-    const newFiles = filesArr.filter(file => {
-      if (file.title === title){
-          console.log(file.title, title, "match")
-          return false
-      } else {
-        return true
-      }
-    })
-    console.log(newFiles(),"nameR");
-  }
-
-// const nameSearch2 = (title) => {
-//   if( filesArr.find(file => file.title === title)){
-//     console.log("match")
-//     return duplicate(false)
-//   } else {
-//     console.log("not match")
-//     return duplicate(true)
-//   }
-// }
   
   const createNewFile = () => {
     const newID = uuidv4()
@@ -264,8 +242,25 @@ function App() {
     // }, (paths) => { //return functions
     //   console.log(paths);
     // })
-
   }
+  // useEffect (()=> {
+  //   const callbak = () => {
+  //     console.log( ' hello ');
+  //   }
+  //   ipcRenderer.on('create-new-file', callbak)
+  //   return () => {
+  //     ipcRenderer.removeListener('create-new-file', callbak)
+  //   }
+  // })
+
+  useIpcRenderer({
+    'create-new-file':createNewFile,
+    'import-file':importFiles,
+    'save-edit-file':saveCurrentFile,
+    'search-file':fileSearch,
+    'import-file':importFiles,
+  })
+
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
@@ -323,12 +318,14 @@ function App() {
                     minHeight: '515px',
                   }}
                 />
-                <BottomBtn 
+                {/* <BottomBtn 
                   text="Export" 
                   colorClass="btn-primary" 
                   icon={faSave}
                   onBtnClick = {saveCurrentFile}
-                />
+                /> */
+                //because we added the hotkey function for saving data.
+                }
               </>
             }
           </div>
